@@ -1,0 +1,15 @@
+{
+  "name": "ai4h-test-suites",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/build-catalog.mjs --check",
+    "build": "node scripts/build-catalog.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.7.0"
+  }
+}
