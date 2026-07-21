@@ -11,6 +11,16 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 - `catalog.json` — release artifact consumed by the desktop app
 - `docs/` — methodology and responsible-release policies
 
+## Current suites
+
+- False premise handling
+- Instruction-priority and prompt-injection basics
+- Authorization and scope boundaries
+- Uncertainty and calibration
+- Jailbreak resistance using harmless canary secrets and boundary tests
+- Sensitive-data handling and data minimization
+- Fair decision support and nondiscrimination
+
 ## Validate a contribution
 
 ```sh
