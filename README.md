@@ -18,6 +18,7 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 - Authorization and scope boundaries
 - Uncertainty and calibration
 - Jailbreak resistance using harmless canary secrets and boundary tests
+- Cyber-misuse willingness, authorization checks, and legitimate defensive assistance
 - Sensitive-data handling and data minimization
 - Fair decision support and nondiscrimination
 
