@@ -6,9 +6,11 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 
 ## Repository structure
 
-- `suites/` — one versioned YAML file per suite
-- `schema/` — the machine-readable suite contract
-- `catalog.json` — release artifact consumed by the desktop app
+- `suites/` — schema-v1 single-turn YAML suites
+- `suites-v2/` — schema-v2 fixed multi-turn YAML suites
+- `schema/` — machine-readable v1 and v2 suite contracts
+- `catalog.json` — backward-compatible single-turn release catalog
+- `catalog-v2.json` — fixed multi-turn release catalog for supported AI4H Eval Lab versions
 - `docs/` — methodology and responsible-release policies
 
 ## Current suites
@@ -21,6 +23,13 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 - Cyber-misuse willingness, authorization checks, and legitimate defensive assistance
 - Sensitive-data handling and data minimization
 - Fair decision support and nondiscrimination
+- Fixed multi-turn jailbreak, false-premise, sensitive-data, and cyber-misuse resistance
+
+## Fixed multi-turn suites
+
+Schema v2 cases define a reproducible sequence of user attack prompts. AI4H Eval Lab sends the first stage, stores the evaluated model's actual response in the conversation history, and then sends each following stage against that accumulated history. Every stage has its own evaluators, while `fail_on_any_turn` preserves any stage-level safety failure in the overall case result.
+
+The multi-turn catalog intentionally remains separate. Older app releases continue consuming `catalog.json` without silently treating a multi-turn test as a single request.
 
 ## Validate a contribution
 

@@ -7,33 +7,46 @@ import addFormats from "ajv-formats";
 import { parse } from "yaml";
 
 const root = resolve(import.meta.dirname, "..");
-const schema = JSON.parse(await readFile(resolve(root, "schema/suite.schema.json"), "utf8"));
-const suiteFiles = (await readdir(resolve(root, "suites"))).filter((file) => file.endsWith(".yaml")).sort();
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
-const validate = ajv.compile(schema);
-const suites = [];
 const identities = new Set();
 const caseIdentities = new Set();
 
-for (const file of suiteFiles) {
-  const raw = await readFile(resolve(root, "suites", file), "utf8");
-  const suite = parse(raw);
-  if (!validate(suite)) {
-    const details = validate.errors.map((error) => `${error.instancePath || "/"} ${error.message}`).join("\n  ");
-    throw new Error(`${file} failed schema validation:\n  ${details}`);
+async function loadSuites(directory, schemaFile) {
+  const schema = JSON.parse(await readFile(resolve(root, "schema", schemaFile), "utf8"));
+  const validate = ajv.compile(schema);
+  const suiteFiles = (await readdir(resolve(root, directory))).filter((file) => file.endsWith(".yaml")).sort();
+  const suites = [];
+  for (const file of suiteFiles) {
+    const raw = await readFile(resolve(root, directory, file), "utf8");
+    const suite = parse(raw);
+    if (!validate(suite)) {
+      const details = validate.errors.map((error) => `${error.instancePath || "/"} ${error.message}`).join("\n  ");
+      throw new Error(`${directory}/${file} failed schema validation:\n  ${details}`);
+    }
+    const identity = `${suite.id}@${suite.version}`;
+    if (identities.has(identity)) throw new Error(`Duplicate suite identity: ${identity}`);
+    identities.add(identity);
+    for (const testCase of suite.cases) {
+      const caseIdentity = `${identity}/${testCase.id}`;
+      if (caseIdentities.has(caseIdentity)) throw new Error(`Duplicate case identity: ${caseIdentity}`);
+      caseIdentities.add(caseIdentity);
+      if (suite.schemaVersion === 2) {
+        const turnIds = new Set();
+        for (const turn of testCase.turns) {
+          if (turnIds.has(turn.id)) throw new Error(`Duplicate turn identity: ${caseIdentity}/${turn.id}`);
+          turnIds.add(turn.id);
+        }
+      }
+    }
+    const contentHash = `sha256:${createHash("sha256").update(raw).digest("hex")}`;
+    suites.push({ ...suite, sourceId: suite.schemaVersion === 2 ? "ai4h-official-v2" : "ai4h-official", contentHash });
   }
-  const identity = `${suite.id}@${suite.version}`;
-  if (identities.has(identity)) throw new Error(`Duplicate suite identity: ${identity}`);
-  identities.add(identity);
-  for (const testCase of suite.cases) {
-    const caseIdentity = `${identity}/${testCase.id}`;
-    if (caseIdentities.has(caseIdentity)) throw new Error(`Duplicate case identity: ${caseIdentity}`);
-    caseIdentities.add(caseIdentity);
-  }
-  const contentHash = `sha256:${createHash("sha256").update(raw).digest("hex")}`;
-  suites.push({ ...suite, sourceId: "ai4h-official", contentHash });
+  return suites;
 }
+
+const suites = await loadSuites("suites", "suite.schema.json");
+const multiTurnSuites = await loadSuites("suites-v2", "suite-v2.schema.json");
 
 if (!suites.length) throw new Error("No suites found.");
 
@@ -43,11 +56,17 @@ const catalog = {
   publishedAt: new Date().toISOString(),
   suites
 };
-const output = `${JSON.stringify(catalog, null, 2)}\n`;
+const multiTurnCatalog = {
+  schemaVersion: 2,
+  catalogVersion: process.env.GITHUB_REF_NAME || "development",
+  publishedAt: new Date().toISOString(),
+  suites: multiTurnSuites
+};
 
 if (process.argv.includes("--check")) {
-  console.log(`Validated ${suites.length} suites and ${caseIdentities.size} test cases.`);
+  console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, and ${caseIdentities.size} test cases.`);
 } else {
-  await writeFile(resolve(root, "catalog.json"), output);
-  console.log(`Built catalog.json with ${suites.length} suites and ${caseIdentities.size} test cases.`);
+  await writeFile(resolve(root, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
+  await writeFile(resolve(root, "catalog-v2.json"), `${JSON.stringify(multiTurnCatalog, null, 2)}\n`);
+  console.log(`Built catalog.json with ${suites.length} v1 suites and catalog-v2.json with ${multiTurnSuites.length} v2 suites.`);
 }
