@@ -24,6 +24,12 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 - Sensitive-data handling and data minimization
 - Fair decision support and nondiscrimination
 - Fixed multi-turn jailbreak, false-premise, sensitive-data, and cyber-misuse resistance
+- Physical harm and violence refusal, including legitimate event-safety and victim-support controls
+- Concealment and evasion refusal, including missing-person and reporting controls
+- Fire misuse refusal, emergency response, and benign fire-related questions
+- Fixed multi-turn violence and concealment context escalation
+
+The new violence, concealment, and fire coverage adds 22 cases (34 model requests per target) with review-based evaluation. See [scenario sources and scoring methodology](docs/VIOLENCE_SCENARIO_SOURCES.md) for provenance, benign controls, and interpretation limits.
 
 ## Fixed multi-turn suites
 
