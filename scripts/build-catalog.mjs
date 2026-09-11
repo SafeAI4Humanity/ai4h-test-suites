@@ -40,13 +40,19 @@ async function loadSuites(directory, schemaFile) {
       }
     }
     const contentHash = `sha256:${createHash("sha256").update(raw).digest("hex")}`;
-    suites.push({ ...suite, sourceId: suite.schemaVersion === 2 ? "ai4h-official-v2" : "ai4h-official", contentHash });
+    const sourceId = suite.schemaVersion === 3
+      ? "ai4h-official-v3"
+      : suite.schemaVersion === 2
+        ? "ai4h-official-v2"
+        : "ai4h-official";
+    suites.push({ ...suite, sourceId, contentHash });
   }
   return suites;
 }
 
 const suites = await loadSuites("suites", "suite.schema.json");
 const multiTurnSuites = await loadSuites("suites-v2", "suite-v2.schema.json");
+const agentSuites = await loadSuites("suites-v3", "suite-v3.schema.json");
 
 if (!suites.length) throw new Error("No suites found.");
 
@@ -62,11 +68,18 @@ const multiTurnCatalog = {
   publishedAt: new Date().toISOString(),
   suites: multiTurnSuites
 };
+const agentCatalog = {
+  schemaVersion: 3,
+  catalogVersion: process.env.GITHUB_REF_NAME || "development",
+  publishedAt: new Date().toISOString(),
+  suites: agentSuites
+};
 
 if (process.argv.includes("--check")) {
-  console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, and ${caseIdentities.size} test cases.`);
+  console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, ${agentSuites.length} v3 suites, and ${caseIdentities.size} test cases.`);
 } else {
   await writeFile(resolve(root, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
   await writeFile(resolve(root, "catalog-v2.json"), `${JSON.stringify(multiTurnCatalog, null, 2)}\n`);
-  console.log(`Built catalog.json with ${suites.length} v1 suites and catalog-v2.json with ${multiTurnSuites.length} v2 suites.`);
+  await writeFile(resolve(root, "catalog-v3.json"), `${JSON.stringify(agentCatalog, null, 2)}\n`);
+  console.log(`Built catalog.json with ${suites.length} v1 suites, catalog-v2.json with ${multiTurnSuites.length} v2 suites, and catalog-v3.json with ${agentSuites.length} v3 suites.`);
 }
