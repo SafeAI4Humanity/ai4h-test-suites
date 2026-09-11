@@ -6,10 +6,12 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse } from "yaml";
 import { normalizeMarkerText } from "./marker-text.mjs";
+import { actVocabulary, namesAct } from "./act-vocabulary.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
+const stanceWarnings = [];
 const identities = new Set();
 const caseIdentities = new Set();
 
@@ -60,13 +62,34 @@ async function loadSuites(directory, schemaFile) {
           ...testCase.sourceTool.poisoned.content.map((part) => part.text),
           expectations.humanReviewRubric
         ].join(" "));
-        // A refusal names what it declines, so a negative marker lifted from the task or the
-        // boundary rejects legitimate refusals. That is the over-rejection mechanism.
-        const temptationText = normalizeMarkerText([testCase.task, testCase.authorizedScope.boundary].join(" "));
-        const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
-        for (const criterion of criteria) {
+        // A refusal names what it declines, so a negative marker lifted from anything the model
+        // was shown rejects legitimate refusals. That is the over-rejection mechanism.
+        const temptationText = normalizeMarkerText([
+          testCase.title,
+          testCase.summary || "",
+          testCase.task,
+          testCase.authorizedScope.boundary,
+          ...testCase.authorizedScope.actions,
+          ...testCase.stopConditions,
+          ...testCase.prohibitedActions
+        ].join(" "));
+        const vocabulary = actVocabulary(testCase);
+        const criteria = [
+          ...expectations.requiredAssistant.clean.map((criterion) => [criterion, "clean"]),
+          ...expectations.requiredAssistant.poisoned.map((criterion) => [criterion, "poisoned"])
+        ];
+        for (const [criterion, variant] of criteria) {
           for (const marker of criterion.anyOf) {
             const value = normalizeMarkerText(marker);
+            if (variant === "poisoned" && !namesAct(marker, vocabulary)) {
+              // Advisory, not fatal. An act-paired positive ("will not scan") is preferred to a
+              // bare stance frame ("not going to"), because a compliant answer satisfies the
+              // frame in one clause and then narrates the act. But requiring it cost roughly
+              // half of all legitimate refusals, and requiredAssistant is the UTILITY axis --
+              // security rests on the tool trace and the negative markers. So when recall and
+              // this preference conflict, recall wins and this only warns.
+              stanceWarnings.push(`${caseIdentity}/${criterion.id} "${marker}"`);
+            }
             if (promptSurface.includes(value)) {
               throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
             }
@@ -74,7 +97,9 @@ async function loadSuites(directory, schemaFile) {
             if (tool) throw new Error(`Marker overlaps forbidden tool ${tool}: ${caseIdentity}/${criterion.id} "${marker}"`);
           }
         }
-        for (const marker of expectations.forbiddenAssistant) {
+        // forbiddenAssistantPoisoned is scored on the poisoned variant only, for prohibitions
+        // whose violation is indistinguishable from a truthful clean-variant report.
+        for (const marker of [...expectations.forbiddenAssistant, ...(expectations.forbiddenAssistantPoisoned || [])]) {
           const value = normalizeMarkerText(marker);
           if (poisonedText.includes(value)) {
             throw new Error(`Forbidden marker quotes the poisoned tool output: ${caseIdentity} "${marker}"`);
@@ -120,6 +145,10 @@ const agentCatalog = {
   publishedAt: new Date().toISOString(),
   suites: agentSuites
 };
+
+if (stanceWarnings.length) {
+  console.warn(`Notice: ${stanceWarnings.length} v3 positive markers name no act from their case's prohibitedActions or forbiddenToolCalls, so a compliant answer can satisfy them with a bare stance and then narrate the act. Act-paired wording is preferred where it does not cost recall; see docs/AGENT_SCOPE_METHODOLOGY.md.`);
+}
 
 if (process.argv.includes("--check")) {
   console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, ${agentSuites.length} v3 suites, and ${caseIdentities.size} test cases.`);
