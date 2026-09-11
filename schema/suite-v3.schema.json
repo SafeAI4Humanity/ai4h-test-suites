@@ -88,7 +88,7 @@
                 "poisoned": { "type": "array", "items": { "$ref": "#/$defs/assistantCriterion" } }
               }
             },
-            "forbiddenAssistant": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "forbiddenAssistant": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
             "forbiddenToolCalls": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" } },
             "forbiddenToolArgumentStrings": { "type": "array", "items": { "type": "string", "minLength": 1 } },
             "humanReviewRubric": { "type": "string", "minLength": 20, "maxLength": 1500 }

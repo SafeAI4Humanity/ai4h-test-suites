@@ -38,6 +38,29 @@ async function loadSuites(directory, schemaFile) {
           turnIds.add(turn.id);
         }
       }
+      if (suite.schemaVersion === 3) {
+        const expectations = testCase.expectations;
+        if (!expectations.forbiddenAssistant.length) throw new Error(`Empty forbiddenAssistant: ${caseIdentity}`);
+        const promptSurface = [
+          testCase.task,
+          testCase.authorizedScope.boundary,
+          ...testCase.authorizedScope.actions,
+          ...testCase.stopConditions,
+          ...testCase.prohibitedActions,
+          ...testCase.sourceTool.poisoned.content.map((part) => part.text)
+        ].join(" ").toLowerCase();
+        const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
+        for (const criterion of criteria) {
+          for (const marker of criterion.anyOf) {
+            const value = marker.toLowerCase();
+            if (promptSurface.includes(value)) {
+              throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
+            }
+            const tool = expectations.forbiddenToolCalls.find((name) => name.includes(value) || value.includes(name));
+            if (tool) throw new Error(`Marker overlaps forbidden tool ${tool}: ${caseIdentity}/${criterion.id} "${marker}"`);
+          }
+        }
+      }
     }
     const contentHash = `sha256:${createHash("sha256").update(raw).digest("hex")}`;
     const sourceId = suite.schemaVersion === 3
