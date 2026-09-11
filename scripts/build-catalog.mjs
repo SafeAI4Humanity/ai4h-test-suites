@@ -5,6 +5,7 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse } from "yaml";
+import { normalizeMarkerText } from "./marker-text.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const ajv = new Ajv2020({ allErrors: true, strict: true });
@@ -38,15 +39,66 @@ async function loadSuites(directory, schemaFile) {
           turnIds.add(turn.id);
         }
       }
+      if (suite.schemaVersion === 3) {
+        const expectations = testCase.expectations;
+        if (!expectations.forbiddenAssistant.length) throw new Error(`Empty forbiddenAssistant: ${caseIdentity}`);
+        const poisonedText = normalizeMarkerText(testCase.sourceTool.poisoned.content.map((part) => part.text).join(" "));
+        // Everything the model is shown, plus the prose a marker could be lifted from.
+        const promptSurface = normalizeMarkerText([
+          suite.title,
+          suite.summary,
+          testCase.title,
+          testCase.summary || "",
+          testCase.task,
+          ...testCase.authorizedScope.targets,
+          ...testCase.authorizedScope.actions,
+          testCase.authorizedScope.boundary,
+          ...testCase.stopConditions,
+          ...testCase.prohibitedActions,
+          testCase.sourceTool.title,
+          testCase.sourceTool.description,
+          ...testCase.sourceTool.poisoned.content.map((part) => part.text),
+          expectations.humanReviewRubric
+        ].join(" "));
+        // A refusal names what it declines, so a negative marker lifted from the task or the
+        // boundary rejects legitimate refusals. That is the over-rejection mechanism.
+        const temptationText = normalizeMarkerText([testCase.task, testCase.authorizedScope.boundary].join(" "));
+        const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
+        for (const criterion of criteria) {
+          for (const marker of criterion.anyOf) {
+            const value = normalizeMarkerText(marker);
+            if (promptSurface.includes(value)) {
+              throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
+            }
+            const tool = expectations.forbiddenToolCalls.find((name) => name.includes(value) || value.includes(name));
+            if (tool) throw new Error(`Marker overlaps forbidden tool ${tool}: ${caseIdentity}/${criterion.id} "${marker}"`);
+          }
+        }
+        for (const marker of expectations.forbiddenAssistant) {
+          const value = normalizeMarkerText(marker);
+          if (poisonedText.includes(value)) {
+            throw new Error(`Forbidden marker quotes the poisoned tool output: ${caseIdentity} "${marker}"`);
+          }
+          if (temptationText.includes(value)) {
+            throw new Error(`Forbidden marker quotes the task or boundary: ${caseIdentity} "${marker}"`);
+          }
+        }
+      }
     }
     const contentHash = `sha256:${createHash("sha256").update(raw).digest("hex")}`;
-    suites.push({ ...suite, sourceId: suite.schemaVersion === 2 ? "ai4h-official-v2" : "ai4h-official", contentHash });
+    const sourceId = suite.schemaVersion === 3
+      ? "ai4h-official-v3"
+      : suite.schemaVersion === 2
+        ? "ai4h-official-v2"
+        : "ai4h-official";
+    suites.push({ ...suite, sourceId, contentHash });
   }
   return suites;
 }
 
 const suites = await loadSuites("suites", "suite.schema.json");
 const multiTurnSuites = await loadSuites("suites-v2", "suite-v2.schema.json");
+const agentSuites = await loadSuites("suites-v3", "suite-v3.schema.json");
 
 if (!suites.length) throw new Error("No suites found.");
 
@@ -62,11 +114,18 @@ const multiTurnCatalog = {
   publishedAt: new Date().toISOString(),
   suites: multiTurnSuites
 };
+const agentCatalog = {
+  schemaVersion: 3,
+  catalogVersion: process.env.GITHUB_REF_NAME || "development",
+  publishedAt: new Date().toISOString(),
+  suites: agentSuites
+};
 
 if (process.argv.includes("--check")) {
-  console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, and ${caseIdentities.size} test cases.`);
+  console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, ${agentSuites.length} v3 suites, and ${caseIdentities.size} test cases.`);
 } else {
   await writeFile(resolve(root, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
   await writeFile(resolve(root, "catalog-v2.json"), `${JSON.stringify(multiTurnCatalog, null, 2)}\n`);
-  console.log(`Built catalog.json with ${suites.length} v1 suites and catalog-v2.json with ${multiTurnSuites.length} v2 suites.`);
+  await writeFile(resolve(root, "catalog-v3.json"), `${JSON.stringify(agentCatalog, null, 2)}\n`);
+  console.log(`Built catalog.json with ${suites.length} v1 suites, catalog-v2.json with ${multiTurnSuites.length} v2 suites, and catalog-v3.json with ${agentSuites.length} v3 suites.`);
 }

@@ -8,9 +8,11 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 
 - `suites/` — schema-v1 single-turn YAML suites
 - `suites-v2/` — schema-v2 fixed multi-turn YAML suites
-- `schema/` — machine-readable v1 and v2 suite contracts
+- `suites-v3/` — schema-v3 agent tool-use and scope-control suites
+- `schema/` — machine-readable v1, v2, and v3 suite contracts
 - `catalog.json` — backward-compatible single-turn release catalog
 - `catalog-v2.json` — fixed multi-turn release catalog for supported AI4H Eval Lab versions
+- `catalog-v3.json` — agent tool-use catalog for AI4H Adversarial MCP
 - `docs/` — methodology and responsible-release policies
 
 ## Current suites
@@ -36,6 +38,10 @@ The new violence, concealment, and fire coverage adds 22 cases (34 model request
 Schema v2 cases define a reproducible sequence of user attack prompts. AI4H Eval Lab sends the first stage, stores the evaluated model's actual response in the conversation history, and then sends each following stage against that accumulated history. Every stage has its own evaluators, while `fail_on_any_turn` preserves any stage-level safety failure in the overall case result.
 
 The multi-turn catalog intentionally remains separate. Older app releases continue consuming `catalog.json` without silently treating a multi-turn test as a single request.
+
+## Agent tool-use suites
+
+Schema v3 cases pair a clean control with an ambiguous or unsafe environment observation. Each case declares authorized targets and actions, stop conditions, prohibited actions, inert tool-call failure rules, and variant-specific utility criteria. Run this catalog with AI4H Adversarial MCP; all external-looking actions are simulated and recorded without side effects. See the [agent scope and uncertainty methodology](docs/AGENT_SCOPE_METHODOLOGY.md) for source provenance, scoring, and interpretation limits.
 
 ## Validate a contribution
 

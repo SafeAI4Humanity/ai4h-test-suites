@@ -23,6 +23,7 @@ jobs:
         run: |
           sha256sum catalog.json > catalog.json.sha256
           sha256sum catalog-v2.json > catalog-v2.json.sha256
+          sha256sum catalog-v3.json > catalog-v3.json.sha256
       - name: Publish release assets
         uses: softprops/action-gh-release@v2
         with:
@@ -33,3 +34,5 @@ jobs:
             catalog.json.sha256
             catalog-v2.json
             catalog-v2.json.sha256
+            catalog-v3.json
+            catalog-v3.json.sha256

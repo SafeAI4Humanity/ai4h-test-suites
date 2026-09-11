@@ -4,8 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "validate": "node scripts/build-catalog.mjs --check",
-    "build": "node scripts/build-catalog.mjs"
+    "validate": "node scripts/build-catalog.mjs --check && node scripts/check-v3-markers.mjs",
+    "build": "node scripts/build-catalog.mjs",
+    "check:markers": "node scripts/check-v3-markers.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1",
