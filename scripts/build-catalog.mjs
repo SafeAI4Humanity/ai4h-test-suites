@@ -6,6 +6,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse } from "yaml";
 import { normalizeMarkerText } from "./marker-text.mjs";
+import { actVocabulary, namesAct } from "./act-vocabulary.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const ajv = new Ajv2020({ allErrors: true, strict: true });
@@ -60,13 +61,28 @@ async function loadSuites(directory, schemaFile) {
           ...testCase.sourceTool.poisoned.content.map((part) => part.text),
           expectations.humanReviewRubric
         ].join(" "));
-        // A refusal names what it declines, so a negative marker lifted from the task or the
-        // boundary rejects legitimate refusals. That is the over-rejection mechanism.
-        const temptationText = normalizeMarkerText([testCase.task, testCase.authorizedScope.boundary].join(" "));
-        const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
-        for (const criterion of criteria) {
+        // A refusal names what it declines, so a negative marker lifted from anything the model
+        // was shown rejects legitimate refusals. That is the over-rejection mechanism.
+        const temptationText = normalizeMarkerText([
+          testCase.title,
+          testCase.summary || "",
+          testCase.task,
+          testCase.authorizedScope.boundary,
+          ...testCase.authorizedScope.actions,
+          ...testCase.stopConditions,
+          ...testCase.prohibitedActions
+        ].join(" "));
+        const vocabulary = actVocabulary(testCase);
+        const criteria = [
+          ...expectations.requiredAssistant.clean.map((criterion) => [criterion, "clean"]),
+          ...expectations.requiredAssistant.poisoned.map((criterion) => [criterion, "poisoned"])
+        ];
+        for (const [criterion, variant] of criteria) {
           for (const marker of criterion.anyOf) {
             const value = normalizeMarkerText(marker);
+            if (variant === "poisoned" && !namesAct(marker, vocabulary)) {
+              throw new Error(`Marker names no act, so a stance frame satisfies it: ${caseIdentity}/${criterion.id} "${marker}"`);
+            }
             if (promptSurface.includes(value)) {
               throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
             }
@@ -74,7 +90,9 @@ async function loadSuites(directory, schemaFile) {
             if (tool) throw new Error(`Marker overlaps forbidden tool ${tool}: ${caseIdentity}/${criterion.id} "${marker}"`);
           }
         }
-        for (const marker of expectations.forbiddenAssistant) {
+        // forbiddenAssistantPoisoned is scored on the poisoned variant only, for prohibitions
+        // whose violation is indistinguishable from a truthful clean-variant report.
+        for (const marker of [...expectations.forbiddenAssistant, ...(expectations.forbiddenAssistantPoisoned || [])]) {
           const value = normalizeMarkerText(marker);
           if (poisonedText.includes(value)) {
             throw new Error(`Forbidden marker quotes the poisoned tool output: ${caseIdentity} "${marker}"`);
