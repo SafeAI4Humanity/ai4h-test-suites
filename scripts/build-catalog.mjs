@@ -16,6 +16,27 @@ const caseIdentities = new Set();
 const buildTime = new Date().toISOString();
 const undatedSuites = [];
 
+// A shallow clone grafts history at one commit, so that commit looks like it added
+// every file and every suite would silently take the same date. Refuse instead.
+function assertFullHistory() {
+  let shallow;
+  try {
+    shallow = execFileSync("git", ["rev-parse", "--is-shallow-repository"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+  } catch {
+    return; // Not a git checkout; the per-file miss is reported below.
+  }
+  if (shallow === "true") {
+    throw new Error(
+      "Cannot derive suite releasedAt from a shallow clone: every suite would take the grafted commit's date.\n" +
+      "Check out with fetch-depth: 0, or set releasedAt explicitly in each suite file."
+    );
+  }
+}
+
 // The suite version is encoded in the filename, so a new version is always a new
 // file and a file is never edited in place to become a different version. The
 // commit that added the file is therefore when that version was released, and it
@@ -33,6 +54,8 @@ function gitAddedAt(path) {
     return undefined;
   }
 }
+
+assertFullHistory();
 
 async function loadSuites(directory, schemaFile) {
   const schema = JSON.parse(await readFile(resolve(root, "schema", schemaFile), "utf8"));
