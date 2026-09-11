@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "catalogVersion": "development",
-  "publishedAt": "2026-09-08T20:51:06.595Z",
+  "publishedAt": "2026-09-11T19:40:04.737Z",
   "suites": [
     {
       "schemaVersion": 1,
@@ -182,7 +182,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:25a6377cd7d9395102eaf2bbc1ab12676de6b4ab38a30770bd4701699ba775f7"
+      "contentHash": "sha256:25a6377cd7d9395102eaf2bbc1ab12676de6b4ab38a30770bd4701699ba775f7",
+      "releasedAt": "2026-07-18T02:54:40.000Z"
     },
     {
       "schemaVersion": 1,
@@ -335,7 +336,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:80d023297061b7d2f6b6ef57d4d4f864c9b623bb686089a8da2d8d3cd0031771"
+      "contentHash": "sha256:80d023297061b7d2f6b6ef57d4d4f864c9b623bb686089a8da2d8d3cd0031771",
+      "releasedAt": "2026-07-18T02:54:40.000Z"
     },
     {
       "schemaVersion": 1,
@@ -489,7 +491,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:d1956355ac12820726d75f65312250a86c8bd4d97360b385b2c76466cd04d026"
+      "contentHash": "sha256:d1956355ac12820726d75f65312250a86c8bd4d97360b385b2c76466cd04d026",
+      "releasedAt": "2026-09-08T21:05:39.000Z"
     },
     {
       "schemaVersion": 1,
@@ -727,7 +730,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:d74162f2c51cba31bb1dfe804a5b3b2c3981ef4c46203558065a127c8c225832"
+      "contentHash": "sha256:d74162f2c51cba31bb1dfe804a5b3b2c3981ef4c46203558065a127c8c225832",
+      "releasedAt": "2026-07-22T02:07:26.000Z"
     },
     {
       "schemaVersion": 1,
@@ -889,7 +893,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:ee28094701e595f30323e1c27b5e83a13dc3aeb3af6bb4af4f36199e4d7c14d7"
+      "contentHash": "sha256:ee28094701e595f30323e1c27b5e83a13dc3aeb3af6bb4af4f36199e4d7c14d7",
+      "releasedAt": "2026-07-21T20:54:42.000Z"
     },
     {
       "schemaVersion": 1,
@@ -982,7 +987,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:6dce4749890908f9d4eb95ffca52aa8ddb40f0b139bfe018a29547430c81a0da"
+      "contentHash": "sha256:6dce4749890908f9d4eb95ffca52aa8ddb40f0b139bfe018a29547430c81a0da",
+      "releasedAt": "2026-07-18T01:51:13.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1115,7 +1121,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:86459545de80c4f1315e1f49a8da6006dc90bffdffe09d636196009055373b4f"
+      "contentHash": "sha256:86459545de80c4f1315e1f49a8da6006dc90bffdffe09d636196009055373b4f",
+      "releasedAt": "2026-09-08T21:05:39.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1263,7 +1270,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:bea5dfc7a10316a6ee22d135238b3110a2cb220f475ac1ddad136ef1dbf98079"
+      "contentHash": "sha256:bea5dfc7a10316a6ee22d135238b3110a2cb220f475ac1ddad136ef1dbf98079",
+      "releasedAt": "2026-07-18T02:54:40.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1325,7 +1333,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:61e076d8b5647b5e0b38e32057e31d611fd444dfb16dd19f6f67413105f0df28"
+      "contentHash": "sha256:61e076d8b5647b5e0b38e32057e31d611fd444dfb16dd19f6f67413105f0df28",
+      "releasedAt": "2026-07-18T01:51:13.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1524,7 +1533,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:bbc38c23dbe0538b5263e31c8ed443d4c694dfe9c7b4a2b0018f55b685d3409e"
+      "contentHash": "sha256:bbc38c23dbe0538b5263e31c8ed443d4c694dfe9c7b4a2b0018f55b685d3409e",
+      "releasedAt": "2026-07-21T20:54:42.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1681,7 +1691,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:1c13be7ffb3dfe4e2cb5a5d51ce39516d2ed5d21fbb1d51a6070958f75c0fb42"
+      "contentHash": "sha256:1c13be7ffb3dfe4e2cb5a5d51ce39516d2ed5d21fbb1d51a6070958f75c0fb42",
+      "releasedAt": "2026-07-18T02:54:40.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1835,7 +1846,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:3cb77c083bf230dd7cdd129036ee39a51ad6a38e835c4d0c56b848158cf238fa"
+      "contentHash": "sha256:3cb77c083bf230dd7cdd129036ee39a51ad6a38e835c4d0c56b848158cf238fa",
+      "releasedAt": "2026-09-08T21:05:39.000Z"
     },
     {
       "schemaVersion": 1,
@@ -1924,7 +1936,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:d0fd3988dfb909ded07d423f333b1d7c83fa80448899dd96263703a9c0d7aa5c"
+      "contentHash": "sha256:d0fd3988dfb909ded07d423f333b1d7c83fa80448899dd96263703a9c0d7aa5c",
+      "releasedAt": "2026-07-18T01:51:13.000Z"
     },
     {
       "schemaVersion": 1,
@@ -2184,7 +2197,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:dd8287f7876bb285f482ea6522c89dd8bb7bced7d0f22969bf9f26c24518e039"
+      "contentHash": "sha256:dd8287f7876bb285f482ea6522c89dd8bb7bced7d0f22969bf9f26c24518e039",
+      "releasedAt": "2026-07-23T15:10:51.000Z"
     },
     {
       "schemaVersion": 1,
@@ -2354,7 +2368,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:7b6c8d0eaecece608e770e69ec8eaff5b13f2f236fb25079332055eaeb032daa"
+      "contentHash": "sha256:7b6c8d0eaecece608e770e69ec8eaff5b13f2f236fb25079332055eaeb032daa",
+      "releasedAt": "2026-07-21T20:54:42.000Z"
     },
     {
       "schemaVersion": 1,
@@ -2505,7 +2520,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:edfd550fc278ffe00d8b0781cd96955188c7d5051a90b9526165d82c9fd15a62"
+      "contentHash": "sha256:edfd550fc278ffe00d8b0781cd96955188c7d5051a90b9526165d82c9fd15a62",
+      "releasedAt": "2026-07-18T02:54:40.000Z"
     },
     {
       "schemaVersion": 1,
@@ -2560,7 +2576,8 @@
         }
       ],
       "sourceId": "ai4h-official",
-      "contentHash": "sha256:5021097b6005e8018c4b37b0b5a76c77c3e8b95257a00f199b7ab49a0893ca86"
+      "contentHash": "sha256:5021097b6005e8018c4b37b0b5a76c77c3e8b95257a00f199b7ab49a0893ca86",
+      "releasedAt": "2026-07-18T01:51:13.000Z"
     }
   ]
 }

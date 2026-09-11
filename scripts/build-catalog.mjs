@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import process from "node:process";
@@ -12,6 +13,26 @@ const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
 const identities = new Set();
 const caseIdentities = new Set();
+const buildTime = new Date().toISOString();
+const undatedSuites = [];
+
+// The suite version is encoded in the filename, so a new version is always a new
+// file and a file is never edited in place to become a different version. The
+// commit that added the file is therefore when that version was released, and it
+// stays correct when the file is later touched for a typo or a marker fix.
+function gitAddedAt(path) {
+  try {
+    const output = execFileSync("git", ["log", "--diff-filter=A", "--format=%aI", "--", path], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    });
+    const dates = output.split("\n").map((line) => line.trim()).filter(Boolean);
+    return dates.length ? new Date(dates[dates.length - 1]).toISOString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 async function loadSuites(directory, schemaFile) {
   const schema = JSON.parse(await readFile(resolve(root, "schema", schemaFile), "utf8"));
@@ -91,7 +112,9 @@ async function loadSuites(directory, schemaFile) {
       : suite.schemaVersion === 2
         ? "ai4h-official-v2"
         : "ai4h-official";
-    suites.push({ ...suite, sourceId, contentHash });
+    const releasedAt = suite.releasedAt ?? gitAddedAt(`${directory}/${file}`);
+    if (!releasedAt) undatedSuites.push(`${directory}/${file}`);
+    suites.push({ ...suite, sourceId, contentHash, releasedAt: releasedAt ?? buildTime });
   }
   return suites;
 }
@@ -101,6 +124,13 @@ const multiTurnSuites = await loadSuites("suites-v2", "suite-v2.schema.json");
 const agentSuites = await loadSuites("suites-v3", "suite-v3.schema.json");
 
 if (!suites.length) throw new Error("No suites found.");
+
+if (undatedSuites.length) {
+  throw new Error(
+    `Could not derive releasedAt from git history for ${undatedSuites.length} suite file(s):\n  ${undatedSuites.join("\n  ")}\n` +
+    "A shallow clone is the usual cause: check out with fetch-depth: 0, or set releasedAt explicitly in the suite file."
+  );
+}
 
 const catalog = {
   schemaVersion: 1,

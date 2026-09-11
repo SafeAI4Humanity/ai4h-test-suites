@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "catalogVersion": "development",
-  "publishedAt": "2026-09-11T13:51:06.558Z",
+  "publishedAt": "2026-09-11T19:40:04.737Z",
   "suites": [
     {
       "schemaVersion": 2,
@@ -130,7 +130,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:b9476f9c7e9917a8694cca2d9e910d5df9cf97add285b965cd498bb9012f7723"
+      "contentHash": "sha256:b9476f9c7e9917a8694cca2d9e910d5df9cf97add285b965cd498bb9012f7723",
+      "releasedAt": "2026-09-08T21:05:39.000Z"
     },
     {
       "schemaVersion": 2,
@@ -369,7 +370,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:456c0efd3a9f0638d1ec440862cae07ae19af3dbc5a902b0ab033e0e3cfe34b8"
+      "contentHash": "sha256:456c0efd3a9f0638d1ec440862cae07ae19af3dbc5a902b0ab033e0e3cfe34b8",
+      "releasedAt": "2026-08-07T15:48:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -570,7 +572,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:944ae0e379387e034945ce92f3f82d365d79716a0cff194804d3f7ab5f0971e3"
+      "contentHash": "sha256:944ae0e379387e034945ce92f3f82d365d79716a0cff194804d3f7ab5f0971e3",
+      "releasedAt": "2026-08-07T15:48:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -1146,7 +1149,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:f70450ac36fd6c720df52d3f6af521215ab573633c492d208587cbf45a32a782"
+      "contentHash": "sha256:f70450ac36fd6c720df52d3f6af521215ab573633c492d208587cbf45a32a782",
+      "releasedAt": "2026-09-10T18:57:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -1724,7 +1728,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:67b65ccc5b14ff0cc3dcafaf09de36f0368da88c892caaa8e171adb9bd8394a7"
+      "contentHash": "sha256:67b65ccc5b14ff0cc3dcafaf09de36f0368da88c892caaa8e171adb9bd8394a7",
+      "releasedAt": "2026-09-10T18:57:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -1907,7 +1912,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:15bcfeb771c52bb8daf0252f70fec39a2dbd23c9a8e0c2213fdf7b24561bfdc3"
+      "contentHash": "sha256:15bcfeb771c52bb8daf0252f70fec39a2dbd23c9a8e0c2213fdf7b24561bfdc3",
+      "releasedAt": "2026-08-07T15:48:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -2526,7 +2532,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:11dc845017d0a2a6aeb580a547a16d007500f9391ff0a9c74a8279f9e7031b45"
+      "contentHash": "sha256:11dc845017d0a2a6aeb580a547a16d007500f9391ff0a9c74a8279f9e7031b45",
+      "releasedAt": "2026-09-10T18:57:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -3125,7 +3132,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:eb7fa2d79fc6a5b5d87cf309ae134507c1edd0c7f0ee8164fefcf5da52888786"
+      "contentHash": "sha256:eb7fa2d79fc6a5b5d87cf309ae134507c1edd0c7f0ee8164fefcf5da52888786",
+      "releasedAt": "2026-09-10T18:57:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -3870,7 +3878,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:7b92b254be83a183985ef6362fbb4422eaf2d78046424516cc968c0cc29654e9"
+      "contentHash": "sha256:7b92b254be83a183985ef6362fbb4422eaf2d78046424516cc968c0cc29654e9",
+      "releasedAt": "2026-09-10T18:57:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -4052,7 +4061,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:740bbede3af9cfd7dc6f0d9b0569ad85ccab8700660ae435890bce4a9cb9921e"
+      "contentHash": "sha256:740bbede3af9cfd7dc6f0d9b0569ad85ccab8700660ae435890bce4a9cb9921e",
+      "releasedAt": "2026-08-07T15:48:48.000Z"
     },
     {
       "schemaVersion": 2,
@@ -4226,7 +4236,8 @@
         }
       ],
       "sourceId": "ai4h-official-v2",
-      "contentHash": "sha256:17fc6730693e31afa673d3866a2ac1be10375df3ac6c1ba2afb582df1a79cd7d"
+      "contentHash": "sha256:17fc6730693e31afa673d3866a2ac1be10375df3ac6c1ba2afb582df1a79cd7d",
+      "releasedAt": "2026-09-08T21:05:39.000Z"
     }
   ]
 }
