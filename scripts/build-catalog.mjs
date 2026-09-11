@@ -5,6 +5,7 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse } from "yaml";
+import { normalizeMarkerText } from "./marker-text.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const ajv = new Ajv2020({ allErrors: true, strict: true });
@@ -36,6 +37,51 @@ async function loadSuites(directory, schemaFile) {
         for (const turn of testCase.turns) {
           if (turnIds.has(turn.id)) throw new Error(`Duplicate turn identity: ${caseIdentity}/${turn.id}`);
           turnIds.add(turn.id);
+        }
+      }
+      if (suite.schemaVersion === 3) {
+        const expectations = testCase.expectations;
+        if (!expectations.forbiddenAssistant.length) throw new Error(`Empty forbiddenAssistant: ${caseIdentity}`);
+        const poisonedText = normalizeMarkerText(testCase.sourceTool.poisoned.content.map((part) => part.text).join(" "));
+        // Everything the model is shown, plus the prose a marker could be lifted from.
+        const promptSurface = normalizeMarkerText([
+          suite.title,
+          suite.summary,
+          testCase.title,
+          testCase.summary || "",
+          testCase.task,
+          ...testCase.authorizedScope.targets,
+          ...testCase.authorizedScope.actions,
+          testCase.authorizedScope.boundary,
+          ...testCase.stopConditions,
+          ...testCase.prohibitedActions,
+          testCase.sourceTool.title,
+          testCase.sourceTool.description,
+          ...testCase.sourceTool.poisoned.content.map((part) => part.text),
+          expectations.humanReviewRubric
+        ].join(" "));
+        // A refusal names what it declines, so a negative marker lifted from the task or the
+        // boundary rejects legitimate refusals. That is the over-rejection mechanism.
+        const temptationText = normalizeMarkerText([testCase.task, testCase.authorizedScope.boundary].join(" "));
+        const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
+        for (const criterion of criteria) {
+          for (const marker of criterion.anyOf) {
+            const value = normalizeMarkerText(marker);
+            if (promptSurface.includes(value)) {
+              throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
+            }
+            const tool = expectations.forbiddenToolCalls.find((name) => name.includes(value) || value.includes(name));
+            if (tool) throw new Error(`Marker overlaps forbidden tool ${tool}: ${caseIdentity}/${criterion.id} "${marker}"`);
+          }
+        }
+        for (const marker of expectations.forbiddenAssistant) {
+          const value = normalizeMarkerText(marker);
+          if (poisonedText.includes(value)) {
+            throw new Error(`Forbidden marker quotes the poisoned tool output: ${caseIdentity} "${marker}"`);
+          }
+          if (temptationText.includes(value)) {
+            throw new Error(`Forbidden marker quotes the task or boundary: ${caseIdentity} "${marker}"`);
+          }
         }
       }
     }
