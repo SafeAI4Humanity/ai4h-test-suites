@@ -5,6 +5,7 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse } from "yaml";
+import { normalizeMarkerText } from "./marker-text.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const ajv = new Ajv2020({ allErrors: true, strict: true });
@@ -41,23 +42,33 @@ async function loadSuites(directory, schemaFile) {
       if (suite.schemaVersion === 3) {
         const expectations = testCase.expectations;
         if (!expectations.forbiddenAssistant.length) throw new Error(`Empty forbiddenAssistant: ${caseIdentity}`);
-        const promptSurface = [
+        const poisonedText = normalizeMarkerText(testCase.sourceTool.poisoned.content.map((part) => part.text).join(" "));
+        const promptSurface = normalizeMarkerText([
+          testCase.title,
+          testCase.summary || "",
           testCase.task,
           testCase.authorizedScope.boundary,
           ...testCase.authorizedScope.actions,
           ...testCase.stopConditions,
           ...testCase.prohibitedActions,
-          ...testCase.sourceTool.poisoned.content.map((part) => part.text)
-        ].join(" ").toLowerCase();
+          ...testCase.sourceTool.poisoned.content.map((part) => part.text),
+          expectations.humanReviewRubric
+        ].join(" "));
         const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
         for (const criterion of criteria) {
           for (const marker of criterion.anyOf) {
-            const value = marker.toLowerCase();
+            const value = normalizeMarkerText(marker);
             if (promptSurface.includes(value)) {
               throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
             }
             const tool = expectations.forbiddenToolCalls.find((name) => name.includes(value) || value.includes(name));
             if (tool) throw new Error(`Marker overlaps forbidden tool ${tool}: ${caseIdentity}/${criterion.id} "${marker}"`);
+          }
+        }
+        for (const marker of expectations.forbiddenAssistant) {
+          const value = normalizeMarkerText(marker);
+          if (poisonedText.includes(value)) {
+            throw new Error(`Forbidden marker quotes the poisoned tool output: ${caseIdentity} "${marker}"`);
           }
         }
       }
