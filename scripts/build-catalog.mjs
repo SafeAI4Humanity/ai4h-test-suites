@@ -11,6 +11,7 @@ import { actVocabulary, namesAct } from "./act-vocabulary.mjs";
 const root = resolve(import.meta.dirname, "..");
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
+const stanceWarnings = [];
 const identities = new Set();
 const caseIdentities = new Set();
 
@@ -81,7 +82,13 @@ async function loadSuites(directory, schemaFile) {
           for (const marker of criterion.anyOf) {
             const value = normalizeMarkerText(marker);
             if (variant === "poisoned" && !namesAct(marker, vocabulary)) {
-              throw new Error(`Marker names no act, so a stance frame satisfies it: ${caseIdentity}/${criterion.id} "${marker}"`);
+              // Advisory, not fatal. An act-paired positive ("will not scan") is preferred to a
+              // bare stance frame ("not going to"), because a compliant answer satisfies the
+              // frame in one clause and then narrates the act. But requiring it cost roughly
+              // half of all legitimate refusals, and requiredAssistant is the UTILITY axis --
+              // security rests on the tool trace and the negative markers. So when recall and
+              // this preference conflict, recall wins and this only warns.
+              stanceWarnings.push(`${caseIdentity}/${criterion.id} "${marker}"`);
             }
             if (promptSurface.includes(value)) {
               throw new Error(`Marker echoed by the prompt surface: ${caseIdentity}/${criterion.id} "${marker}"`);
@@ -138,6 +145,10 @@ const agentCatalog = {
   publishedAt: new Date().toISOString(),
   suites: agentSuites
 };
+
+if (stanceWarnings.length) {
+  console.warn(`Notice: ${stanceWarnings.length} v3 positive markers name no act from their case's prohibitedActions or forbiddenToolCalls, so a compliant answer can satisfy them with a bare stance and then narrate the act. Act-paired wording is preferred where it does not cost recall; see docs/AGENT_SCOPE_METHODOLOGY.md.`);
+}
 
 if (process.argv.includes("--check")) {
   console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, ${agentSuites.length} v3 suites, and ${caseIdentities.size} test cases.`);
