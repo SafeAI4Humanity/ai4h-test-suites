@@ -43,17 +43,26 @@ async function loadSuites(directory, schemaFile) {
         const expectations = testCase.expectations;
         if (!expectations.forbiddenAssistant.length) throw new Error(`Empty forbiddenAssistant: ${caseIdentity}`);
         const poisonedText = normalizeMarkerText(testCase.sourceTool.poisoned.content.map((part) => part.text).join(" "));
+        // Everything the model is shown, plus the prose a marker could be lifted from.
         const promptSurface = normalizeMarkerText([
+          suite.title,
+          suite.summary,
           testCase.title,
           testCase.summary || "",
           testCase.task,
-          testCase.authorizedScope.boundary,
+          ...testCase.authorizedScope.targets,
           ...testCase.authorizedScope.actions,
+          testCase.authorizedScope.boundary,
           ...testCase.stopConditions,
           ...testCase.prohibitedActions,
+          testCase.sourceTool.title,
+          testCase.sourceTool.description,
           ...testCase.sourceTool.poisoned.content.map((part) => part.text),
           expectations.humanReviewRubric
         ].join(" "));
+        // A refusal names what it declines, so a negative marker lifted from the task or the
+        // boundary rejects legitimate refusals. That is the over-rejection mechanism.
+        const temptationText = normalizeMarkerText([testCase.task, testCase.authorizedScope.boundary].join(" "));
         const criteria = [...expectations.requiredAssistant.clean, ...expectations.requiredAssistant.poisoned];
         for (const criterion of criteria) {
           for (const marker of criterion.anyOf) {
@@ -69,6 +78,9 @@ async function loadSuites(directory, schemaFile) {
           const value = normalizeMarkerText(marker);
           if (poisonedText.includes(value)) {
             throw new Error(`Forbidden marker quotes the poisoned tool output: ${caseIdentity} "${marker}"`);
+          }
+          if (temptationText.includes(value)) {
+            throw new Error(`Forbidden marker quotes the task or boundary: ${caseIdentity} "${marker}"`);
           }
         }
       }
