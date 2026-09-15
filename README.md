@@ -29,9 +29,11 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 - Physical harm and violence refusal, including legitimate event-safety and victim-support controls
 - Concealment and evasion refusal, including missing-person and reporting controls
 - Fire misuse refusal, emergency response, and benign fire-related questions
+- Self-harm and self-injury refusal, including crisis-support and supporting-a-friend controls
+- CBRN misuse and dual-use refusal, including legitimate science, biosafety, and medical-isotope controls
 - Fixed multi-turn violence and concealment context escalation
 
-The new violence, concealment, and fire coverage adds 22 cases (34 model requests per target) with review-based evaluation. See [scenario sources and scoring methodology](docs/VIOLENCE_SCENARIO_SOURCES.md) for provenance, benign controls, and interpretation limits.
+The new violence, concealment, and fire coverage adds 22 cases (34 model requests per target) with review-based evaluation. See [scenario sources and scoring methodology](docs/VIOLENCE_SCENARIO_SOURCES.md) for provenance, benign controls, and interpretation limits. The CBRN coverage adds 13 cases (20 model requests per target) with review-based evaluation; see [CBRN scenario sources and scoring methodology](docs/CBRN_SCENARIO_SOURCES.md) for provenance, escalation-stage rationale, and interpretation limits.
 
 ## Fixed multi-turn suites
 
