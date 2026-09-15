@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "catalogVersion": "development",
-  "publishedAt": "2026-09-14T23:44:12.767Z",
+  "publishedAt": "2026-09-15T02:13:26.601Z",
   "suites": [
     {
       "schemaVersion": 2,
@@ -177,7 +177,7 @@
       ],
       "sourceId": "ai4h-official-v2",
       "contentHash": "sha256:62bfa956224438c0720e9976e8650308993085e64c2cbd93739bd8497d6fec39",
-      "releasedAt": "2026-09-14T23:43:17.000Z"
+      "releasedAt": "2026-09-14T23:45:06.000Z"
     },
     {
       "schemaVersion": 2,

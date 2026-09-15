@@ -174,7 +174,88 @@ const agentCatalog = {
   suites: agentSuites
 };
 
+// publishedAt is a wall-clock read and catalogVersion is the current git ref, so both
+// differ on every build and on every branch. Every other field is derived from the
+// suite files and from git history, so a committed catalog that disagrees with a fresh
+// build was not rebuilt after the suites changed.
+const volatileCatalogFields = ["publishedAt", "catalogVersion"];
+
+function withoutVolatileFields(catalog) {
+  const stable = { ...catalog };
+  for (const field of volatileCatalogFields) delete stable[field];
+  return stable;
+}
+
+function isPlainObject(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+// The first disagreement is enough to act on, and naming the suite it sits in makes it
+// findable: entries in an array of identified objects are reported by id, not by index.
+function findDifference(committed, rebuilt, path) {
+  if (Array.isArray(committed) && Array.isArray(rebuilt)) {
+    if (committed.length !== rebuilt.length) {
+      return { path: `${path}.length`, committed: committed.length, rebuilt: rebuilt.length };
+    }
+    for (let index = 0; index < committed.length; index += 1) {
+      const label = rebuilt[index]?.id ?? committed[index]?.id ?? index;
+      const difference = findDifference(committed[index], rebuilt[index], `${path}[${label}]`);
+      if (difference) return difference;
+    }
+    return undefined;
+  }
+  if (isPlainObject(committed) && isPlainObject(rebuilt)) {
+    for (const key of new Set([...Object.keys(committed), ...Object.keys(rebuilt)])) {
+      const difference = findDifference(committed[key], rebuilt[key], path ? `${path}.${key}` : key);
+      if (difference) return difference;
+    }
+    return undefined;
+  }
+  if (committed !== rebuilt) return { path: path || "(root)", committed, rebuilt };
+  return undefined;
+}
+
+function describe(value) {
+  return value === undefined ? "(absent)" : JSON.stringify(value);
+}
+
+const rebuildInstruction = "Run `npm run build` and commit the result.";
+
+async function assertCommittedMatches(file, rebuilt) {
+  let raw;
+  try {
+    raw = await readFile(resolve(root, file), "utf8");
+  } catch {
+    throw new Error(`${file} is missing or unreadable. ${rebuildInstruction}`);
+  }
+  let committed;
+  try {
+    committed = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`${file} is not valid JSON: ${error.message}\n${rebuildInstruction}`);
+  }
+  const difference = findDifference(withoutVolatileFields(committed), withoutVolatileFields(rebuilt), "");
+  if (difference) {
+    throw new Error(
+      `${file} does not match what the suite files build:\n` +
+      `  ${difference.path}\n` +
+      `    committed: ${describe(difference.committed)}\n` +
+      `    rebuilt:   ${describe(difference.rebuilt)}\n` +
+      `${rebuildInstruction}\n` +
+      `(${volatileCatalogFields.join(" and ")} are excluded: they change on every build.)`
+    );
+  }
+}
+
 if (process.argv.includes("--check")) {
+  try {
+    await assertCommittedMatches("catalog.json", catalog);
+    await assertCommittedMatches("catalog-v2.json", multiTurnCatalog);
+    await assertCommittedMatches("catalog-v3.json", agentCatalog);
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
   console.log(`Validated ${suites.length} v1 suites, ${multiTurnSuites.length} v2 suites, ${agentSuites.length} v3 suites, and ${caseIdentities.size} test cases.`);
 } else {
   await writeFile(resolve(root, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`);
