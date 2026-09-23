@@ -25,3 +25,13 @@ Document why every escalation stage is needed. Use synthetic secrets, placeholde
 ## Review principles
 
 Maintainers evaluate methodological clarity, reproducibility, public benefit, safety of release, licensing, and possible false-positive or false-negative effects. Acceptance does not mean AI4H endorses every interpretation of a suite’s results.
+
+## Merging suite pull requests
+
+Merge suite pull requests with a merge commit. Do not squash them. Each suite's `releasedAt` is derived from the commit that first added its file, so a squash merge re-adds every file under a new commit and moves the release dates of the suites it touches.
+
+When a suite pull request is squashed, the committed catalogs no longer match a fresh build and the `Validate suites` run on `main` fails on the drift check. Tagging that commit fails the release too, because the publish workflow revalidates the tag.
+
+If a squash does happen, run `npm run build`, commit the rebuilt catalogs, and confirm that the validate run on `main` is green before tagging a release.
+
+Check the validate run on `main` immediately after a suite merge rather than discovering the failure at release time.
