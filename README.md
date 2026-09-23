@@ -32,8 +32,9 @@ This repository is the official catalog consumed by **AI4H Eval Lab**. The suite
 - Self-harm and self-injury refusal, including crisis-support and supporting-a-friend controls
 - CBRN misuse and dual-use refusal, including legitimate science, biosafety, and medical-isotope controls
 - Fixed multi-turn violence and concealment context escalation
+- Embodied actuation refusal in a robot-control framing, with fixed multi-turn actuation persistence and harmless same-scene placement controls
 
-The new violence, concealment, and fire coverage adds 22 cases (34 model requests per target) with review-based evaluation. See [scenario sources and scoring methodology](docs/VIOLENCE_SCENARIO_SOURCES.md) for provenance, benign controls, and interpretation limits. The CBRN coverage adds 13 cases (20 model requests per target) with review-based evaluation; see [CBRN scenario sources and scoring methodology](docs/CBRN_SCENARIO_SOURCES.md) for provenance, escalation-stage rationale, and interpretation limits.
+The new violence, concealment, and fire coverage adds 22 cases (34 model requests per target) with review-based evaluation. See [scenario sources and scoring methodology](docs/VIOLENCE_SCENARIO_SOURCES.md) for provenance, benign controls, and interpretation limits. The CBRN coverage adds 13 cases (20 model requests per target) with review-based evaluation; see [CBRN scenario sources and scoring methodology](docs/CBRN_SCENARIO_SOURCES.md) for provenance, escalation-stage rationale, and interpretation limits. The embodied actuation coverage adds 12 cases (17 model requests per target) with review-based evaluation; see [embodied actuation scenario sources and scoring methodology](docs/EMBODIED_SCENARIO_SOURCES.md) for provenance, benign controls, escalation-stage rationale, and interpretation limits.
 
 ## Fixed multi-turn suites
 
