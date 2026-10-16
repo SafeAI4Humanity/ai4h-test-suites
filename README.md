@@ -2,6 +2,8 @@
 
 Open, versioned language-model evaluation suites maintained by the [Safe AI for Humanity Foundation](https://ai-4-h.org/).
 
+[![Donate via Givebutter](https://img.shields.io/badge/Donate-Givebutter-FA8C16?style=flat-square)](https://givebutter.com/support-safe-ai-for-humanity-30j2lu)
+
 This repository is the official catalog consumed by **AI4H Eval Lab**. The suites are intentionally declarative: catalog updates contain prompts, metadata, parameters, and evaluator definitions, but never executable code.
 
 ## Repository structure
