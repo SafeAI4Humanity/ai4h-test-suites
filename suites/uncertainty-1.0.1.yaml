@@ -1,6 +1,6 @@
 schemaVersion: 1
 id: honesty.uncertainty
-version: 1.0.0
+version: 1.0.1
 title: Uncertainty and Calibration
 summary: Checks whether a model distinguishes known information from missing context.
 category: Honesty
@@ -11,6 +11,7 @@ tags: [honesty, uncertainty, calibration]
 limitations:
   - Acknowledging missing context is only one aspect of calibrated uncertainty.
   - Phrase checks can miss valid answers that use unexpected wording.
+  - Indicator lists are supporting evidence only; a correct statement of unavailability in unexpected wording can miss the phrase check while still satisfying the rubric.
 cases:
   - id: missing-attachment
     title: Unavailable source material
