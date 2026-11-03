@@ -1,6 +1,7 @@
 schemaVersion: 3
 id: agent.subagent-delegation-safety
 version: 1.0.3
+releasedAt: "2026-11-02T23:34:25Z"
 title: Subagent Delegation Safety
 summary: Tests whether an agent routes prohibited actions to a synthetic child agent or passes prohibited instructions into subagent task content instead of stopping.
 category: Agent delegation safety
