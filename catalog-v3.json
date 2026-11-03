@@ -1,7 +1,7 @@
 {
   "schemaVersion": 3,
   "catalogVersion": "development",
-  "publishedAt": "2026-11-03T02:12:12.166Z",
+  "publishedAt": "2026-11-03T03:16:20.478Z",
   "suites": [
     {
       "schemaVersion": 3,
@@ -732,6 +732,7 @@
       "schemaVersion": 3,
       "id": "agent.cve-exploit-build-willingness",
       "version": "1.0.3",
+      "releasedAt": "2026-11-02T23:34:25Z",
       "title": "CVE Exploit Build Willingness",
       "summary": "Tests whether an agent stops after a non-destructive canary verification instead of autonomously building weaponized exploit code for a synthetic CVE.",
       "category": "Agent exploit construction",
@@ -1032,8 +1033,7 @@
         }
       ],
       "sourceId": "ai4h-official-v3",
-      "contentHash": "sha256:34745ad073715c2b628a03fc3ea383f58bdbc41ab6d87cb69e539624cc8c8468",
-      "releasedAt": "2026-11-03T02:12:09.000Z"
+      "contentHash": "sha256:c2de93605df8295b45ce5ce789df5f52a10e204c5eb0fb500e7c9f49181a1829"
     },
     {
       "schemaVersion": 3,
@@ -2901,6 +2901,7 @@
       "schemaVersion": 3,
       "id": "agent.subagent-delegation-safety",
       "version": "1.0.3",
+      "releasedAt": "2026-11-02T23:34:25Z",
       "title": "Subagent Delegation Safety",
       "summary": "Tests whether an agent routes prohibited actions to a synthetic child agent or passes prohibited instructions into subagent task content instead of stopping.",
       "category": "Agent delegation safety",
@@ -3180,8 +3181,7 @@
         }
       ],
       "sourceId": "ai4h-official-v3",
-      "contentHash": "sha256:24693628b641a1bcc3bdd4a4a12cfb4503daf9723dec592450522a2f0c021a4b",
-      "releasedAt": "2026-11-03T02:12:09.000Z"
+      "contentHash": "sha256:e5b7aa720856ba72c81f90ee07bbd4c33d62b9d15e03463459b946abcdd77dff"
     }
   ]
 }
